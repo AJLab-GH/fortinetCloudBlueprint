@@ -6,7 +6,6 @@ The purpose of this architecture is to provide the user with a set of templates 
 
 ![fgfwb](https://raw.githubusercontent.com/AJLab-GH/fortinetCloudBlueprint/staging/Images/fgfwb.png)
 
-
 The FortiGate and FortiWeb in this solution compliment one-another. The FortiWeb has advanced features that the FortiGate does not, but can only apply those protections to HTTP, HTTPs. The FortiGate can support a variety of protocols, perform dynamic routing, terminate VPN, perform SD-WAN and so much more.
 
 ![DesignConsiderations](https://raw.githubusercontent.com/AJLab-GH/fortinetCloudBlueprint/staging/Images/designconsiderations.png)
@@ -51,21 +50,58 @@ These templates can also be used to extend or customized based on your requireme
 
 ## How to deploy
 
-The solution can be deployed using the Azure Portal or Azure CLI. There are 3 variables needed to complete kickstart the deployment. The BICEP deployment will ask them automatically via AZ CLI. When you deploy the ARM template the Azure Portal will request the variables as a requirement.
+The solution can be deployed using Azure DevOps, Azure CLI, or a GitHub workflow. There are 3 variables needed for the deployment. The AZ CLI BICEP deployment will prompt for input automatically. When deploying the ARM template with the Azure Portal the wizard will prompt for variable input.
 
-- PREFIX : This prefix will be added to each of the created resources for easy of use, manageability and visibility.
-- USERNAME : The username used to login to the FortiGate GUI and SSH mangement UI.
-- PASSWORD : The password used for the FortiGate GUI and SSH management UI.
+- deploymentPrefix: This prefix will be added to each of the created resources for easy of use, manageability and visibility.
+- adminUsername: The username used to login to the FortiGate GUI and SSH mangement UI.
+- adminPassword: The password used for the FortiGate GUI and SSH management UI.
 
-## Making modifications to the template
+### Making modifications to the template
 
 If you do not wish to use the OOTB values for your deployment, changes can be made to the "000-main.bicep" file. This file is the ONLY file where values can be changed or modified. Changes to the modules will be inherited from the Main File.
+
+### Azure DevOps
+
+- Log into https://dev.azure.com and create a pipeline with the following file and create variables.
+
+    |Variable Name  | Value  |
+    |---------|---------|
+    |adminPassword         | VM admin password |
+    |adminUsername         | VM admin username |
+    |deploymentPrefix      | string prefix     |
+
+```yml
+trigger:
+- main
+
+variables:
+- group: fortinet-secure-cloud-blueprint
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: 'fortinet-secure-cloud-blueprint'
+    subscriptionId: '8675309-XXXX-YYYY-ZZZZ-8675309'
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: 'fortinet-secure-cloud-blueprint'
+    location: 'Canada Central'
+    templateLocation: 'Linked artifact'
+    csmFile: './000-main.bicep'
+    deploymentMode: 'Incremental'
+    deploymentName: 'fortinet-secure-cloud-blueprint'
+    overrideParameters: -adminUsername $(adminUsername) -adminPassword $(adminPassword) -deploymentPrefix $(deploymentPrefix)
+
+```
+
 ### Azure CLI
 
-To deploy via Azure Cloud Shell you can connect via the Azure Portal or directly to [https://shell.azure.com/](https://shell.azure.com/).
+To deploy via Azure Cloud Shell, connect via the Azure Portal or directly to [https://shell.azure.com/](https://shell.azure.com/).
 
-- Login into the Azure Cloud Shell
-- Run the following commands in the Azure Cloud:
+- Login to the Azure Cloud Shell, and execute the following commands in the Azure Cloud Shell:
 
 ```text
 az bicep upgrade
@@ -73,15 +109,37 @@ git clone https://github.com/AJLab-GH/fortinetCloudBlueprint.git
 cd fortinetCloudBlueprint
 ```
 
-Create a resource group for your deployment
+- Create a resource group for your deployment
 
 ```text
- az group create --location (location) --name (resourceGroupName)
+az group create --location (location) --name (resourceGroupName)
 ```
 
 ![Create Resource Group](https://raw.githubusercontent.com/AJLab-GH/fortinetCloudBlueprint/staging/Images/createRG.png)
 
-Deploy the templates
+- Accept the terms for the PAYG or BYOL images in the Azure Marketplace before creating a deployment.
+
+BYOL FortiGate
+```
+az vm image terms accept --publisher fortinet --offer fortinet_fortigate-vm_v5 --plan fortinet_fg-vm
+```
+
+BYOL FortiWeb
+```
+az vm image terms accept --publisher fortinet --offer fortinet_fortiweb-vm_v5 --plan fortinet_fw-vm
+```
+
+PAYG FortiGate
+```
+az vm image terms accept --publisher fortinet --offer fortinet_fortigate-vm_v5 --plan fortinet_fg-vm_payg_2022
+```
+
+PAYG FortiWeb
+```
+az vm image terms accept --publisher fortinet --offer fortinet_fortiweb-vm_v5 --plan fortinet_fw-vm_payg_v2
+```
+
+- Deploy the templates
 
 ```text
  az deployment group create --name (deploymentName) --resource-group (resourceGroupName) --template-file 000-main.bicep
@@ -93,15 +151,91 @@ The script will ask you a few questions to bootstrap a full deployment.
 After deployment you can output the important values such as public IP addresses, etc that you'll need to connect to your deployment.
 
 ```text
-az deployment group show  -g (resourceGroupName)   -n (deploymentName)  --query properties.outputs
+az deployment group show -g (resourceGroupName) -n (deploymentName) --query properties.outputs
 ```
 
 ![Input Variables](https://raw.githubusercontent.com/AJLab-GH/fortinetCloudBlueprint/staging/Images/Outputs.png)
 
-## Deleting the Deployments
+#### Deleting the Deployment
 
 ```text
-az deployment group delete  -g (resourceGroupName)   -n (deploymentName)
+az deployment group delete -g (resourceGroupName) -n (deploymentName)
+```
+
+### GitHub Workflow
+
+#### Create GitHub Secrets
+
+Provide the application's **Client ID**, **Tenant ID**, and **Subscription ID** to the login action. These values are stored in GitHub secrets and referenced in the workflow.
+
+1. Open your GitHub repository and go to **Settings**.
+
+1. Select **Settings > Secrets > New secret**.
+
+1. Create secrets for `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, and `AZURE_SUBSCRIPTION_ID`. Use these values from your Active Directory application for your GitHub secrets:
+
+    |GitHub Secret  | Active Directory Application  |
+    |---------|---------|
+    |AZURE_CLIENT_ID       | Application (client) ID   |
+    |AZURE_TENANT_ID       | Directory (tenant) ID    |
+    |AZURE_SUBSCRIPTION_ID | Subscription ID    |
+    |AZURE_RG              | Resource Group |
+    |adminPassword         | VM admin password |
+    |adminUsername         | VM admin username |
+
+1. Save each secret by selecting **Add secret**.
+
+#### Create workflow
+
+1. From your GitHub repository, select **Actions** from the top menu.
+1. Select **New workflow**.
+1. Select **set up a workflow yourself**.
+1. Replace the content of the yml file with the following code:
+
+```yml
+---
+name: Azure ARM
+on: [push]
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: 'Checkout Repo'
+      uses: actions/checkout@v3
+
+    - name: 'Az CLI login'
+      uses: azure/login@v1
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: 'Create Resource Group'
+      run: |
+        az group create --location CanadaEast --name ${{ secrets.AZURE_RG }}
+
+    - name: 'Accept License Agreement'
+      run: |
+        az vm image terms accept --publisher fortinet --offer fortinet_fortigate-vm_v5 --plan fortinet_fg-vm
+        az vm image terms accept --publisher fortinet --offer fortinet_fortiweb-vm_v5 --plan fortinet_fw-vm
+        az vm image terms accept --publisher fortinet --offer fortinet_fortigate-vm_v5 --plan fortinet_fg-vm_payg_2022
+        az vm image terms accept --publisher fortinet --offer fortinet_fortiweb-vm_v5 --plan fortinet_fw-vm_payg_v2
+
+    - name: deploy
+      uses: azure/arm-deploy@v1
+      with:
+        subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        resourceGroupName: ${{ secrets.AZURE_RG }}
+        template: ./000-main.bicep
+        parameters: "adminPassword=${{ secrets.adminPassword }} adminUsername=${{ secrets.adminUsername }} deploymentPrefix=${{ secrets.AZURE_RG }}"
+        failOnStdErr: false
+
+    - name: 'Show Output'
+      run: az deployment group show -g ${{ secrets.AZURE_RG }} -n ${{ secrets.AZURE_RG }} --query properties.outputs
 ```
 
 ## Requirements and limitations
@@ -118,15 +252,6 @@ The Bicep template deploys different resources and it is required to have the ac
   - It must be 12 characters or longer
   - It needs to contain characters from at least 3 of the following groups: uppercase characters, lowercase characters, numbers, and special characters excluding '\' or '-'
 
-- The terms for the PAYG or BYOL images in the Azure Marketplace needs to be accepted once before usage. This is done automatically during deployment via the Azure Portal. For the Azure CLI the commands below need to be run before the first deployment in a subscription.
-  - BYOL FortiGate
-`az vm image terms accept --publisher fortinet --offer fortinet_fortigate-vm_v5 --plan fortinet_fg-vm`
-  - BYOL FortiWeb
-`az vm image terms accept --publisher fortinet --offer fortinet_fortiweb-vm_v5 --plan fortinet_fw-vm`
-  - PAYG FortiGate
-`az vm image terms accept --publisher fortinet --offer fortinet_fortigate-vm_v5 --plan fortinet_fg-vm_payg_2022`
-  - PAYG FortiWeb
-`az vm image terms accept --publisher fortinet --offer fortinet_fortiweb-vm_v5 --plan fortinet_fw-vm_payg_v2`
 
 ## Fabric Connector
 
