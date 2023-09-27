@@ -12,7 +12,7 @@
 //  to jump to Network Portion "CTRL + F" for 123                                                                                  //
 //  to jump to FortiGate Portion "CTRL + F" for 456                                                                                //
 //  to jump to FortiWeb Portion "CTRL + F" for 789                                                                                 //
-//  to jump to DVWA Portion "CTRL + F" for 101112                                                                                  //
+//  to jump to WKLD Portion "CTRL + F" for 101112                                                                                  //
 //  to jump to Modules Portion "CTRL + F" for 131415                                                                               //
 //  to jump to Outputs Portion "CTRL + F" for 161718                                                                               //
 //                                                                                                                                 //
@@ -33,12 +33,12 @@
 ])
 param deployFortiWeb string = 'yes'
 
-@description ('Do you want to deploy a DVWA Instance as a part of this Template (Y/N)')
+@description ('Do you want to deploy a WKLD Instance as a part of this Template (Y/N)')
 @allowed([
   'yes'
   'no'
 ])
-param deployDVWA string = 'yes'
+param deployWKLD string = 'yes'
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                                                                 //
@@ -47,7 +47,7 @@ param deployDVWA string = 'yes'
 //                                                                                                                                 //
 //   NOTES:                                                                                                                        // 
 //   1). The Deployment Prefix will be used throughout the deployment                                                              //
-//   2). The same Username and Password will be applied to the FortiGate(s), FortiWeb(s) and DVWA appliance                        //
+//   2). The same Username and Password will be applied to the FortiGate(s), FortiWeb(s) and WKLD appliance                        //
 //       and can be changed post-deployment                                                                                        //
 //                                                                                                                                 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -185,34 +185,10 @@ param fortiGateImageSKU string = 'fortinet_fg-vm_payg_2022'
 
 @description('Select the image version')
 @allowed([
-  '6.2.0'
-  '6.2.2'
-  '6.2.4'
-  '6.2.5'
-  '6.4.0'
-  '6.4.10'
-  '6.4.11'
-  '6.4.2'
-  '6.4.3'
-  '6.4.5'
-  '6.4.6'
-  '6.4.7'
-  '6.4.8'
-  '6.4.9'
-  '7.0.0'
-  '7.0.1'
-  '7.0.2'
-  '7.0.3'
-  '7.0.4'
-  '7.0.5'
-  '7.0.6'
-  '7.0.8'
-  '7.0.9'
-  '7.2.0'
-  '7.2.1'
-  '7.2.2'
-  '7.2.3'
-  'latest'
+'7.0.12'
+'7.2.5'
+'7.4.0'
+'latest'
 ])
 param fortiGateImageVersion string = 'latest'
 
@@ -391,9 +367,9 @@ param fortiWebImageSKU string = 'fortinet_fw-vm_payg_v2'
 
 @description('FortiWeb versions available in the Azure Marketplace. Additional version can be downloaded via https://support.fortinet.com/')
 @allowed([
-  '6.3.17'
   '7.0.0'
   '7.0.3'
+  '7.0.5'
   '7.2.0'
   'latest'
 ])
@@ -441,17 +417,17 @@ param fwbserialConsole string = 'yes'
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                                                                 //
 //                                                                                                                                 //
-//  The Following Parameters are STATIC and their values will be pushed down to the DVWA Template                                  //
+//  The Following Parameters are STATIC and their values will be pushed down to the WKLD Template                                  //
 //                                                                                                                                 //
 //                                                                                                                                 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@description('Enable Serial Console on the DVWA')
+@description('Enable Serial Console on the WKLD')
 @allowed([
   'yes'
   'no'
 ])
-param dvwaserialConsole string = 'yes'
+param wkldserialConsole string = 'yes'
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                                                                 //
@@ -583,8 +559,8 @@ module fortiWebTemplate '003-fortiweb.bicep' = if (deployFortiWeb == 'yes') {
   ]
 }
 
-module dvwaTemplate '004-dvwa.bicep' = if (deployDVWA == 'yes') {
-  name: 'dvwaDeployment'
+module wkldTemplate '004-wkld.bicep' = if (deployWKLD == 'yes') {
+  name: 'wkldDeployment'
   params: {
     adminPassword: adminPassword
     adminUsername:  adminUsername
@@ -596,7 +572,7 @@ module dvwaTemplate '004-dvwa.bicep' = if (deployDVWA == 'yes') {
     vnetName: vnetName
     vnetNewOrExisting: vnetNewOrExisting
     vnetResourceGroup: vnetResourceGroup
-    dvwaserialConsole: dvwaserialConsole
+    wkldserialConsole: wkldserialConsole
   }
   dependsOn: [
     fortiGateTemplate
@@ -614,8 +590,8 @@ module dvwaTemplate '004-dvwa.bicep' = if (deployDVWA == 'yes') {
 //                                                                                                                       161718    //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-output dvwaSSH string = '${fortiGateTemplate.outputs.fortiGatePublicIP}:22'
-output dvwaHTTP string = 'http://${fortiWebTemplate.outputs.fortiWebPublicIP}:80'
+output wkldSSH string = '${fortiGateTemplate.outputs.fortiGatePublicIP}:22'
+output wkldHTTP string = 'http://${fortiWebTemplate.outputs.fortiWebPublicIP}:80'
 output fortiGateAManagementConsole string = 'https://${fortiGateTemplate.outputs.fortiGateAManagementPublicIP}:443'
 output fortiGateBManagementConsole string = 'https://${fortiGateTemplate.outputs.fortiGateBManagementPublicIP}:443'
 output fortiWebAManagementConsole string = 'https://${fortiWebTemplate.outputs.fortiWebPublicIP}:40030'

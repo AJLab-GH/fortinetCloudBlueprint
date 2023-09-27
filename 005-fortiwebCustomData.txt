@@ -11,7 +11,7 @@ set wvs enable
 set fortigate-integration enable
 end
 config waf url-access url-access-rule
-edit "DVWA_URL_ACCCESS_RULE"
+edit "WKLD_URL_ACCCESS_RULE"
 set action alert_deny
 config  match-condition
 edit 1
@@ -22,16 +22,16 @@ end
 next
 end
 config waf url-access url-access-policy
-edit "DVWA_URL_ACCESS_POLICY"
+edit "WKLD_URL_ACCESS_POLICY"
 config  rule
 edit 1
-set url-access-rule-name DVWA_URL_ACCCESS_RULE
+set url-access-rule-name WKLD_URL_ACCCESS_RULE
 next
 end
 next
 end
 config waf geo-block-list
-edit "DVWA_GEO_PROTECTION"
+edit "WKLD_GEO_PROTECTION"
 config  country-list
 edit 1
 set country-name Afghanistan
@@ -40,7 +40,7 @@ end
 next
 end
 config waf ip-list
-edit "DVWA_IP_LIST"
+edit "WKLD_IP_LIST"
 set action alert_deny
 config  members
 edit 1
@@ -57,7 +57,7 @@ set password demo
 next
 end
 config user user-group
-edit "DVWA_USER_GROUP"
+edit "WKLD_USER_GROUP"
 config  members
 edit 1
 set local-name demo
@@ -66,27 +66,27 @@ end
 next
 end
 config waf http-authen http-authen-rule
-edit "DVWA_AUTH_RULE"
+edit "WKLD_AUTH_RULE"
 config  rule
 edit 1
 set user-realm REALM
-set user-group DVWA_USER_GROUP
+set user-group WKLD_USER_GROUP
 set request-url /instructions.php
 next
 end
 next
 end
 config waf http-authen http-authen-policy
-edit "DVWA_AUTH_POLICY"
+edit "WKLD_AUTH_POLICY"
 config  rule
 edit 1
-set http-authen-rule DVWA_AUTH_RULE
+set http-authen-rule WKLD_AUTH_RULE
 next
 end
 next
 end
 config waf hidden-fields-rule
-edit "DVWA_HIDDEN_FIELD_RULE"
+edit "WKLD_HIDDEN_FIELD_RULE"
 config  hidden-field-name
 edit 1
 set argument MAX_FILE_SIZE
@@ -98,16 +98,16 @@ set action-url0 /vulnerabilities/upload/
 next
 end
 config waf hidden-fields-protection
-edit "DVWA_HIDDEN_FIELD"
+edit "WKLD_HIDDEN_FIELD"
 config  hidden_fields_list
 edit 1
-set hidden-field-rule DVWA_HIDDEN_FIELD_RULE
+set hidden-field-rule WKLD_HIDDEN_FIELD_RULE
 next
 end
 next
 end
 config waf user-tracking rule
-edit "DVWA_USER_TRACKING_RULE"
+edit "WKLD_USER_TRACKING_RULE"
 set authentication-url /login.php
 set username-parameter username
 set password-parameter password
@@ -121,16 +121,16 @@ end
 next
 end
 config waf user-tracking policy
-edit "DVWA_USER_TRACKING"
+edit "WKLD_USER_TRACKING"
 config  input-rule-list
 edit 1
-set input-rule DVWA_USER_TRACKING_RULE
+set input-rule WKLD_USER_TRACKING_RULE
 next
 end
 next
 end
 config waf url-rewrite url-rewrite-rule
-edit "DVWA_URL_REWRITE_FORTINET"
+edit "WKLD_URL_REWRITE_FORTINET"
 set action redirect-301
 set location https://www.fortinet.com
 config  header-removal
@@ -144,7 +144,7 @@ set reg-exp ^/fortinet.*
 next
 end
 next
-edit "DVWA_URL_REWRITE_CHANGE"
+edit "WKLD_URL_REWRITE_CHANGE"
 set url-status enable
 set url /vulnerabilities/csrf/
 config  header-removal
@@ -160,24 +160,24 @@ end
 next
 end
 config waf url-rewrite url-rewrite-policy
-edit "DVWA_URL_REWRITE"
+edit "WKLD_URL_REWRITE"
 config  rule
 edit 1
-set url-rewrite-rule-name DVWA_URL_REWRITE_FORTINET
+set url-rewrite-rule-name WKLD_URL_REWRITE_FORTINET
 next
 edit 2
-set url-rewrite-rule-name DVWA_URL_REWRITE_CHANGE
+set url-rewrite-rule-name WKLD_URL_REWRITE_CHANGE
 next
 end
 next
 end
 config waf allow-method-policy
-edit "DVWA_ALLOW_METHOD"
+edit "WKLD_ALLOW_METHOD"
 set allow-method get post 
 next
 end
 config waf file-upload-restriction-rule
-edit "DVWA_WEBSHELL_UPLOADING"
+edit "WKLD_WEBSHELL_UPLOADING"
 set request-type regular
 set request-file ^/.*
 set type Block
@@ -205,21 +205,21 @@ end
 next
 end
 config waf file-upload-restriction-policy
-edit "DVWA_FILE_SECURITY_POLICY"
+edit "WKLD_FILE_SECURITY_POLICY"
 set av-scan enable
 config  rule
 edit 1
-set file-upload-restriction-rule DVWA_WEBSHELL_UPLOADING
+set file-upload-restriction-rule WKLD_WEBSHELL_UPLOADING
 next
 end
 next
 end
 config waf webshell-detection-policy
-edit "DVWA_WEBSHELL_UPLOADING"
+edit "WKLD_WEBSHELL_UPLOADING"
 next
 end
 config waf csrf-protection
-edit "DVWA_CSRF_PROTECTION"
+edit "WKLD_CSRF_PROTECTION"
 set action alert_deny
 config  csrf-url-list
 edit 1
@@ -238,7 +238,7 @@ end
 next
 end
 config waf mitb-rule
-edit "DVWA_MAN_IN_THE_BROWSER_RULE"
+edit "WKLD_MAN_IN_THE_BROWSER_RULE"
 set action alert_deny
 set severity Medium
 set request-url /login.php
@@ -257,16 +257,16 @@ end
 next
 end
 config waf mitb-policy
-edit "DVWA_MAN_IN_THE_BROWSER"
+edit "WKLD_MAN_IN_THE_BROWSER"
 config  rule-list
 edit 1
-set mitb-rule DVWA_MAN_IN_THE_BROWSER_RULE
+set mitb-rule WKLD_MAN_IN_THE_BROWSER_RULE
 next
 end
 next
 end
 config waf input-rule
-edit "DVWA_PARAMETER_VALIDATION_RULE"
+edit "WKLD_PARAMETER_VALIDATION_RULE"
 set severity Medium
 set request-type regular
 set request-file ^/vulnerabilities/exec/.*
@@ -281,10 +281,10 @@ end
 next
 end
 config waf parameter-validation-rule
-edit "DVWA_PARAMETER_VALIDATION"
+edit "WKLD_PARAMETER_VALIDATION"
 config  input-rule-list
 edit 1
-set input-rule DVWA_PARAMETER_VALIDATION_RULE
+set input-rule WKLD_PARAMETER_VALIDATION_RULE
 next
 end
 next
@@ -317,7 +317,7 @@ set status enable
 next
 end
 config waf signature
-edit "DVWA_SIGNATURE_PROFILE"
+edit "WKLD_SIGNATURE_PROFILE"
 config  main_class_list
 edit "010000000"
 set fpm-status disable
@@ -498,7 +498,7 @@ end
 next
 end
 config waf x-forwarded-for
-edit "DVWA_X_FORWARDED_FOR"
+edit "WKLD_X_FORWARDED_FOR"
 set x-forwarded-for-support enable
 set original-ip-header X-FORWARDED-FOR
 config  ip-list
@@ -506,20 +506,20 @@ end
 next
 end
 config server-policy vserver
-edit "DVWA_VS"
+edit "WKLD_VS"
 config  vip-list
 edit 1
 set interface port1
 set use-interface-ip enable
 next
 edit 2
-set vip DVWA_VIP
+set vip WKLD_VIP
 next
 end
 next
 end
 config waf http-protocol-parameter-restriction
-edit "DVWA_PROTOCOL_CONSTRAINTS"
+edit "WKLD_PROTOCOL_CONSTRAINTS"
 set max-http-header-length 4096
 set max-http-header-length-severity High
 set max-http-content-length 65536
@@ -601,7 +601,7 @@ set odd-and-even-space-attack-severity High
 next
 end
 config waf bot-deception
-edit "DVWA_BOT_DECEPTION"
+edit "WKLD_BOT_DECEPTION"
 set deception-url /fake_url.php
 set action alert_deny
 config  url-list
@@ -612,18 +612,18 @@ end
 next
 end
 config waf biometrics-based-detection
-edit "DVWA_BOT_BIOMETRICS"
+edit "WKLD_BOT_BIOMETRICS"
 set event-collection-time 10
 config  url-list
 end
 next
 end
 config waf threshold-based-detection policy
-edit "DVWA_BOT_TRESHOLDS"
+edit "WKLD_BOT_TRESHOLDS"
 next
 end
 config waf known-bots
-edit "DVWA_BOT_SIGNATURES"
+edit "WKLD_BOT_SIGNATURES"
 config  malicious-bot-disable-list
 end
 config  known-good-bots-disable-list
@@ -631,47 +631,47 @@ end
 next
 end
 config waf bot-mitigate-policy
-edit "DVWA_BOT_POLICY"
-set bot-deception DVWA_BOT_DECEPTION
-set biometrics-based-detection DVWA_BOT_BIOMETRICS
-set threshold-based-detection DVWA_BOT_TRESHOLDS
-set known-bots DVWA_BOT_SIGNATURES
+edit "WKLD_BOT_POLICY"
+set bot-deception WKLD_BOT_DECEPTION
+set biometrics-based-detection WKLD_BOT_BIOMETRICS
+set threshold-based-detection WKLD_BOT_TRESHOLDS
+set known-bots WKLD_BOT_SIGNATURES
 next
 end
 config waf http-request-flood-prevention-rule
-edit "DVWA_HTTP_FLOOD"
+edit "WKLD_HTTP_FLOOD"
 set access-limit-in-http-session 5
 next
 end
 config waf http-connection-flood-check-rule
-edit "DVWA_CONNECTION_LIMIT"
+edit "WKLD_CONNECTION_LIMIT"
 set http-connection-threshold 100
 next
 end
 config waf layer4-access-limit-rule
-edit "DVWA_HTTP_LIMIT"
+edit "WKLD_HTTP_LIMIT"
 set access-limit-standalone-ip 500
 set access-limit-share-ip 1000
 next
 end
 config waf layer4-connection-flood-check-rule
-edit "DVWA_TCP_FLOOD"
+edit "WKLD_TCP_FLOOD"
 set layer4-connection-threshold 255
 next
 end
 config waf application-layer-dos-prevention
-edit "DVWA_DOS_POLICY"
+edit "WKLD_DOS_POLICY"
 set enable-http-session-based-prevention enable
-set http-request-flood-prevention-rule DVWA_HTTP_FLOOD
-set http-connection-flood-check-rule DVWA_CONNECTION_LIMIT
+set http-request-flood-prevention-rule WKLD_HTTP_FLOOD
+set http-connection-flood-check-rule WKLD_CONNECTION_LIMIT
 set enable-layer4-dos-prevention enable
-set layer4-access-limit-rule DVWA_HTTP_LIMIT
-set layer4-connection-flood-check-rule DVWA_TCP_FLOOD
+set layer4-access-limit-rule WKLD_HTTP_LIMIT
+set layer4-connection-flood-check-rule WKLD_TCP_FLOOD
 set layer3-fragment-protection enable
 next
 end
 config waf custom-access rule
-edit "DVWA_VULNERABILITY_SCANNING"
+edit "WKLD_VULNERABILITY_SCANNING"
 set action block-period
 set severity High
 config  main-class
@@ -768,7 +768,7 @@ set within 60
 next
 end
 next
-edit "DVWA_BRUTE_FORCE_LOGIN"
+edit "WKLD_BRUTE_FORCE_LOGIN"
 set action block-period
 set severity High
 set bot-confirmation enable
@@ -788,20 +788,20 @@ end
 next
 end
 config waf custom-access policy
-edit "DVWA_CUSTOM_POLICY"
+edit "WKLD_CUSTOM_POLICY"
 config  rule
 edit 1
-set rule-name DVWA_VULNERABILITY_SCANNING
+set rule-name WKLD_VULNERABILITY_SCANNING
 next
 edit 2
-set rule-name DVWA_BRUTE_FORCE_LOGIN
+set rule-name WKLD_BRUTE_FORCE_LOGIN
 next
 end
 set threat-weight severe
 next
 end
 config waf http-header-security
-edit "DVWA_HEADER_SECURITY"
+edit "WKLD_HEADER_SECURITY"
 config  http-header-security-list
 edit 1
 set name x-content-type-options
@@ -817,7 +817,7 @@ end
 next
 end
 config waf cookie-security
-edit "DVWA_COOKIE_SECURITY"
+edit "WKLD_COOKIE_SECURITY"
 set security-mode signed
 set action alert_deny
 set severity Medium
@@ -825,48 +825,48 @@ set secure-cookie enable
 next
 end
 config waf web-protection-profile inline-protection
-edit "DVWA_PROTECTION_PROFILE"
-set url-access-policy DVWA_URL_ACCESS_POLICY
-set signature-rule DVWA_SIGNATURE_PROFILE
-set x-forwarded-for-rule DVWA_X_FORWARDED_FOR
-set parameter-validation-rule DVWA_PARAMETER_VALIDATION
-set hidden-fields-protection DVWA_HIDDEN_FIELD
-set allow-method-policy DVWA_ALLOW_METHOD
-set url-rewrite-policy DVWA_URL_REWRITE
-set http-authen-policy DVWA_AUTH_POLICY
-set file-upload-policy DVWA_FILE_SECURITY_POLICY
-set webshell-detection-policy DVWA_WEBSHELL_UPLOADING
-set http-protocol-parameter-restriction DVWA_PROTOCOL_CONSTRAINTS
-set ip-list-policy DVWA_IP_LIST
-set application-layer-dos-prevention DVWA_DOS_POLICY
-set geo-block-list-policy DVWA_GEO_PROTECTION
-set custom-access-policy DVWA_CUSTOM_POLICY
+edit "WKLD_PROTECTION_PROFILE"
+set url-access-policy WKLD_URL_ACCESS_POLICY
+set signature-rule WKLD_SIGNATURE_PROFILE
+set x-forwarded-for-rule WKLD_X_FORWARDED_FOR
+set parameter-validation-rule WKLD_PARAMETER_VALIDATION
+set hidden-fields-protection WKLD_HIDDEN_FIELD
+set allow-method-policy WKLD_ALLOW_METHOD
+set url-rewrite-policy WKLD_URL_REWRITE
+set http-authen-policy WKLD_AUTH_POLICY
+set file-upload-policy WKLD_FILE_SECURITY_POLICY
+set webshell-detection-policy WKLD_WEBSHELL_UPLOADING
+set http-protocol-parameter-restriction WKLD_PROTOCOL_CONSTRAINTS
+set ip-list-policy WKLD_IP_LIST
+set application-layer-dos-prevention WKLD_DOS_POLICY
+set geo-block-list-policy WKLD_GEO_PROTECTION
+set custom-access-policy WKLD_CUSTOM_POLICY
 set ip-intelligence enable
-set cookie-security-policy DVWA_COOKIE_SECURITY
+set cookie-security-policy WKLD_COOKIE_SECURITY
 set fortigate-quarantined-ips enable
-set csrf-protection DVWA_CSRF_PROTECTION
-set user-tracking-policy DVWA_USER_TRACKING
-set http-header-security DVWA_HEADER_SECURITY
-set bot-mitigate-policy DVWA_BOT_POLICY
+set csrf-protection WKLD_CSRF_PROTECTION
+set user-tracking-policy WKLD_USER_TRACKING
+set http-header-security WKLD_HEADER_SECURITY
+set bot-mitigate-policy WKLD_BOT_POLICY
 next
 end
 config server-policy policy
-edit "DVWA_POLICY"
+edit "WKLD_POLICY"
 set ssl enable
-set vserver DVWA_VS
+set vserver WKLD_VS
 set service HTTP
 set https-service HTTPS
-set web-protection-profile DVWA_PROTECTION_PROFILE
+set web-protection-profile WKLD_PROTECTION_PROFILE
 set replacemsg Predefined
-set server-pool DVWA_POOL
+set server-pool WKLD_POOL
 set http-to-https enable
 set syncookie enable
 set tlog enable
 next
 end
 config wvs policy
-edit "DVWASCANPOLICY"
+edit "WKLDSCANPOLICY"
 set report_format html xml pdf 
-set profile DVWASCANPROFILE
+set profile WKLDSCANPROFILE
 next
 end

@@ -2,7 +2,7 @@
 
 ## Prologue
 
-The purpose of this architecture is to provide the user with a set of templates that will deploy and preconfigure perimeter solution that addresses the dynamic needs of an environment, while optimizing for security. The templates are equipped with a FortiGate Next Generation Firewall, FortiWeb WAF and DVWA Endpoint. While the WAF is designed to secure your Web Servers against inbound attacks over HTTP/HTTPs, the Next Generation Firewall is a General Purpose tool that will enable your connectivity (IPSec, SSL VPN, SDWAN) in addition to offering Multi-Protocol security and being your primary egress mechanism.
+The purpose of this architecture is to provide the user with a set of templates that will deploy and preconfigure perimeter solution that addresses the dynamic needs of an environment, while optimizing for security. The templates are equipped with a FortiGate Next Generation Firewall, FortiWeb WAF and WKLD Endpoint. While the WAF is designed to secure your Web Servers against inbound attacks over HTTP/HTTPs, the Next Generation Firewall is a General Purpose tool that will enable your connectivity (IPSec, SSL VPN, SDWAN) in addition to offering Multi-Protocol security and being your primary egress mechanism.
 
 ![fgfwb](https://raw.githubusercontent.com/AJLab-GH/fortinetCloudBlueprint/staging/Images/fgfwb.png)
 
@@ -24,7 +24,7 @@ This set of Bicep templates deploys:
 
  an Active/Active FortiWeb (WAF) pair operating in Reverse Proxy combined with the Microsoft Azure Standard Load Balancer on the external side. This FortiWeb cluster will be responsible protecting traffic inbound to your Web Applications, i.e HTTP(s) only.
 
- a Damn Vulnerable Web Application (DVWA). DVWA is a PHP/MySQL web application that is damn vulnerable. Its main goal is to be an aid for security professionals to test their skills and tools in a legal environment, help web developers better understand the processes of securing web applications and to aid both students & teachers to learn about web application security in a controlled class room environment.
+ a Damn Vulnerable Web Application (WKLD). WKLD is a PHP/MySQL web application that is damn vulnerable. Its main goal is to be an aid for security professionals to test their skills and tools in a legal environment, help web developers better understand the processes of securing web applications and to aid both students & teachers to learn about web application security in a controlled class room environment.
 
 ## Design
 
